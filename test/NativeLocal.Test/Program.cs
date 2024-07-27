@@ -26,7 +26,7 @@ var provider = services.BuildServiceProvider();
 
 var nativeFileService = provider.GetRequiredService<NativeFileService>();
 
-var created = await nativeFileService.FragmentUploadCreateAsync(new FileStorage.NativeLocal.Model.FragmentUploadCreateArgs()
+var created = await nativeFileService.FragmentUploadCreateAsync(new FileStorage.NativeLocal.Models.FragmentUploadCreateArgs()
 {
 	FileId = "D2B75007-CF80-4A78-A7D0-F3007D9F8CC9",
 	ChunkSize = 5 * 1024 * 1024,

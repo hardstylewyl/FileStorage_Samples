@@ -12,11 +12,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F30D4301-277
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{C6A0355D-AF17-4DA7-B0BB-C721DEDE329D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileStorage.NativeLocal", "src\FileStorage.NativeLocal\FileStorage.NativeLocal.csproj", "{172463FC-B383-42BA-AFA9-FF6057603ED3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileStorage.NativeLocal", "src\FileStorage.NativeLocal\FileStorage.NativeLocal.csproj", "{172463FC-B383-42BA-AFA9-FF6057603ED3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{74A87161-4C7A-4DB4-9EFC-796C2D055C81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NativeLocal.Test", "test\NativeLocal.Test\NativeLocal.Test.csproj", "{B8CAC2EB-7095-4EDC-B952-ECFD62471667}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NativeLocal.Test", "test\NativeLocal.Test\NativeLocal.Test.csproj", "{B8CAC2EB-7095-4EDC-B952-ECFD62471667}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileStorage.TusLocal", "src\FileStorage.TusLocal\FileStorage.TusLocal.csproj", "{8D7F75D5-2A42-4D2E-919A-E712A98641AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileStorage", "src\FileStorage\FileStorage.csproj", "{02A711D3-3C41-4B87-9DFB-CB6655A076D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +36,14 @@ Global
 		{B8CAC2EB-7095-4EDC-B952-ECFD62471667}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8CAC2EB-7095-4EDC-B952-ECFD62471667}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8CAC2EB-7095-4EDC-B952-ECFD62471667}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D7F75D5-2A42-4D2E-919A-E712A98641AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D7F75D5-2A42-4D2E-919A-E712A98641AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D7F75D5-2A42-4D2E-919A-E712A98641AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D7F75D5-2A42-4D2E-919A-E712A98641AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02A711D3-3C41-4B87-9DFB-CB6655A076D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02A711D3-3C41-4B87-9DFB-CB6655A076D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02A711D3-3C41-4B87-9DFB-CB6655A076D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02A711D3-3C41-4B87-9DFB-CB6655A076D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +51,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{172463FC-B383-42BA-AFA9-FF6057603ED3} = {F30D4301-2776-48B0-9A8E-4084D56A8BF9}
 		{B8CAC2EB-7095-4EDC-B952-ECFD62471667} = {74A87161-4C7A-4DB4-9EFC-796C2D055C81}
+		{8D7F75D5-2A42-4D2E-919A-E712A98641AF} = {F30D4301-2776-48B0-9A8E-4084D56A8BF9}
+		{02A711D3-3C41-4B87-9DFB-CB6655A076D5} = {F30D4301-2776-48B0-9A8E-4084D56A8BF9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FAEA8002-2D42-453C-9C1B-6356F69690C4}

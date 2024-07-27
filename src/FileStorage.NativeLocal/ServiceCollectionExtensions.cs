@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using FileStorage.NativeLocal.Model;
+using FileStorage.NativeLocal.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

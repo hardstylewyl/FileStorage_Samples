@@ -1,5 +1,5 @@
 using System.Security.Cryptography;
-using FileStorage.NativeLocal.Model;
+using FileStorage.NativeLocal.Models;
 using Microsoft.Extensions.Logging;
 
 namespace FileStorage.NativeLocal;

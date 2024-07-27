@@ -1,4 +1,4 @@
-﻿namespace FileStorage.NativeLocal.Model;
+﻿namespace FileStorage.NativeLocal.Models;
 
 public sealed class FragmentUploadCreateArgs
 {

@@ -1,4 +1,4 @@
-namespace FileStorage.NativeLocal.Model;
+namespace FileStorage.NativeLocal.Models;
 
 public sealed class NativeFileInfo(
 	string fileId,
@@ -31,6 +31,10 @@ public sealed class NativeFileInfo(
 	//在磁盘上的文件夹
 	public string? OnDiskDirectoryPath { get; set; } = onDiskDirectoryPath;
 
+	//最后一次写入日期
+	public DateTime LastWriteDate { get; set; }
+
+
 	//写入成功字节
 	public void WriteSuccessByte(long chunkSeq)
 	{
@@ -38,6 +42,7 @@ public sealed class NativeFileInfo(
 			throw new ArgumentOutOfRangeException(nameof(chunkSeq));
 
 		ChunksStatus[chunkSeq] = SuccessByteFlag;
+		LastWriteDate = DateTime.Now;
 	}
 
 	//获取未完成的分片

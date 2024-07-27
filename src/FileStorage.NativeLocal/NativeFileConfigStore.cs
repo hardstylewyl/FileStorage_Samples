@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
-using FileStorage.NativeLocal.Model;
+using FileStorage.NativeLocal.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
