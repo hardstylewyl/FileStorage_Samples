@@ -1,6 +1,6 @@
 using FileStorage.Caching;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace FileStorage.TusLocal.UrlStorage;
@@ -20,7 +20,7 @@ public static class TusUrlStorageApi
 	}
 
 
-	public static async Task<List<PreviousUpload>> FindAllUploads([AsParameters] FreeRedisCache freeRedisCache)
+	public static async Task<List<PreviousUpload>> FindAllUploads([FromServices] FreeRedisCache freeRedisCache)
 	{
 		var result = await freeRedisCache
 			.RedisClient
@@ -30,7 +30,7 @@ public static class TusUrlStorageApi
 			result.Count != 0 ? [.. result.Values] : [];
 	}
 
-	public static async Task<PreviousUpload> FindUploadsByFileId([AsParameters] FreeRedisCache freeRedisCache,
+	public static async Task<PreviousUpload> FindUploadsByFileId([FromServices] FreeRedisCache freeRedisCache,
 		string fileId)
 	{
 		return await freeRedisCache.
@@ -39,7 +39,7 @@ public static class TusUrlStorageApi
 	}
 
 
-	public static async Task<long> RemoveUpload([AsParameters] FreeRedisCache freeRedisCache,
+	public static async Task<long> RemoveUpload([FromServices] FreeRedisCache freeRedisCache,
 		string fileId)
 	{
 		return await freeRedisCache.
@@ -47,8 +47,8 @@ public static class TusUrlStorageApi
 			.HDelAsync(RedisKey, fileId);
 	}
 
-	public static async Task<long> AddUpload([AsParameters] FreeRedisCache freeRedisCache,
-		[AsParameters] TusAddUploadRequest request)
+	public static async Task<long> AddUpload([FromServices] FreeRedisCache freeRedisCache,
+		[FromBody] TusAddUploadRequest request)
 	{
 		return await freeRedisCache
 			.RedisClient

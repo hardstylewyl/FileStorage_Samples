@@ -6,16 +6,13 @@ namespace FileStorage.TusLocal;
 
 public static class ServiceCollectionExtensions
 {
-
-
 	public static IServiceCollection AddTusLocalStorage(this IServiceCollection services, Action<TusLocalOptions> optionsSetup)
 	{
 		var options = new TusLocalOptions();
 		optionsSetup.Invoke(options);
 		return services.AddTusLocalStorage(options);
 	}
-
-
+	
 	public static IServiceCollection AddTusLocalStorage(this IServiceCollection services, TusLocalOptions options)
 	{
 		services.AddScoped<TusFileService>();

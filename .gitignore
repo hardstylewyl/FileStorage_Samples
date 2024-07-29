@@ -381,4 +381,3 @@ MigrationBackup/
 .terraform.lock.hcl
 terraform.tfstate
 terraform.tfstate.backup
-/src/Server/VueBffProxy.Server/wwwroot
