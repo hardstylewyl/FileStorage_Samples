@@ -8,7 +8,9 @@ public sealed class FileMetadataEntity
 	{
 	}
 
-	public FileMetadataEntity(string fileName, string userId, string bucketName, string objectName, string fileUrl,
+	public FileMetadataEntity(
+		string fileName, string userId,
+		string bucketName, string objectName, string fileUrl,
 		long size, string extension, string md5)
 	{
 		FileName = fileName;
@@ -19,7 +21,7 @@ public sealed class FileMetadataEntity
 		Size = size;
 		Extension = extension;
 		Md5 = md5;
-		Key = BuildKey(md5, size);
+		FileId = BuildFileId(md5, size);
 		UploadTimeOnUtc = DateTime.UtcNow;
 	}
 
@@ -28,7 +30,7 @@ public sealed class FileMetadataEntity
 	/// <summary>
 	///     用于索引的key {md5}_{size}
 	/// </summary>
-	public string Key { get; set; }
+	public string FileId { get; set; }
 
 	/// <summary>
 	///     文件名 如a.png
@@ -76,7 +78,7 @@ public sealed class FileMetadataEntity
 	public DateTime UploadTimeOnUtc { get; set; }
 
 
-	public static string BuildKey(string md5, long size)
+	public static string BuildFileId(string md5, long size)
 	{
 		return $"{md5}_{size}";
 	}

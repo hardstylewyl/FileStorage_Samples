@@ -1,6 +1,6 @@
+using FileStorage.Extensions;
 using FileStorage.NativeLocal;
 using Microsoft.Extensions.DependencyInjection;
-
 var services = new ServiceCollection();
 services.AddLogging();
 
@@ -17,11 +17,16 @@ if (!Directory.Exists(configPath))
 	Directory.CreateDirectory(configPath);
 }
 
-services.AddNativeLocalStorage(o =>
-{
-	o.TempDirectoryPath = tempPath;
-	o.ConfigDirectoryPath = configPath;
-});
+services.AddFileStoreage()
+	.AddLocalStore(x =>
+	{
+		x.AddNativeLocalStorage(o =>
+		{
+			o.TempDirectoryPath = tempPath;
+			o.ConfigDirectoryPath = configPath;
+		});
+	});
+
 var provider = services.BuildServiceProvider();
 
 var nativeFileService = provider.GetRequiredService<NativeFileService>();

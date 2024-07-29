@@ -4,6 +4,5 @@ namespace FileStorage.Core;
 
 public sealed class FileStoreageBuilder
 {
-	public IServiceCollection Services { get; set; }
-
+	public IServiceCollection Services { get; set; } = null!;
 }

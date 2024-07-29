@@ -15,7 +15,6 @@ public sealed class FileMetadataEntityTypeConfiguration : IEntityTypeConfigurati
 			.IsRequired();
 
 		builder.HasIndex(x => x.UserId);
-
-		builder.HasIndex(x => x.Md5).IsUnique();
+		builder.HasIndex(x => x.FileId).IsUnique();
 	}
 }

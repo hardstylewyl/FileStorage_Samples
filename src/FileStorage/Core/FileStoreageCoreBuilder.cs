@@ -10,6 +10,7 @@ namespace FileStorage.Core;
 
 public sealed class FileStoreageCoreBuilder(FileStoreageBuilder InnerBuilder)
 {
+	public IServiceCollection Services => InnerBuilder.Services;
 	public FileStoreageCoreBuilder UseDbContext<TDbContext>()
 		where TDbContext : DbContext
 	{
@@ -57,10 +58,10 @@ public sealed class FileStoreageCoreBuilder(FileStoreageBuilder InnerBuilder)
 
 	public FileStoreageCoreBuilder UseFreeRedisCache(FreeRedisCacheOptions options)
 	{
-		InnerBuilder.Services.AddSingleton(sp =>
+		InnerBuilder.Services.AddSingleton<IRedisCache>(sp =>
 		{
 			//构建redisClient
-			var cli = new RedisClient(options.Configuration);
+			var cli = new FreeRedisCache(options.Configuration);
 			cli.Serialize += o => JsonSerializer.Serialize(o);
 			cli.Deserialize += (json, type) => JsonSerializer.Deserialize(json, type);
 
@@ -72,7 +73,7 @@ public sealed class FileStoreageCoreBuilder(FileStoreageBuilder InnerBuilder)
 						=> logger.Log(options.LogLevel, "Exec Redis Command:{cmd}", e.Log);
 			}
 
-			return new FreeRedisCache(cli);
+			return cli;
 		});
 
 		InnerBuilder.Services.AddSingleton<ICache>(sp => sp.GetRequiredService<FreeRedisCache>());

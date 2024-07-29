@@ -20,38 +20,34 @@ public static class TusUrlStorageApi
 	}
 
 
-	public static async Task<List<PreviousUpload>> FindAllUploads([FromServices] FreeRedisCache freeRedisCache)
+	public static async Task<List<PreviousUpload>> FindAllUploads([FromServices] IRedisCache redisCache)
 	{
-		var result = await freeRedisCache
-			.RedisClient
+		var result = await redisCache
 			.HGetAllAsync<PreviousUpload>(RedisKey);
 
 		return
 			result.Count != 0 ? [.. result.Values] : [];
 	}
 
-	public static async Task<PreviousUpload> FindUploadsByFileId([FromServices] FreeRedisCache freeRedisCache,
+	public static async Task<PreviousUpload> FindUploadsByFileId([FromServices] IRedisCache redisCache,
 		string fileId)
 	{
-		return await freeRedisCache.
-			RedisClient
+		return await redisCache
 			.HGetAsync<PreviousUpload>(RedisKey, fileId);
 	}
 
 
-	public static async Task<long> RemoveUpload([FromServices] FreeRedisCache freeRedisCache,
+	public static async Task<long> RemoveUpload([FromServices] IRedisCache redisCache,
 		string fileId)
 	{
-		return await freeRedisCache.
-			RedisClient
+		return await redisCache
 			.HDelAsync(RedisKey, fileId);
 	}
 
-	public static async Task<long> AddUpload([FromServices] FreeRedisCache freeRedisCache,
+	public static async Task<long> AddUpload([FromServices] IRedisCache redisCache,
 		[FromBody] TusAddUploadRequest request)
 	{
-		return await freeRedisCache
-			.RedisClient
+		return await redisCache
 			.HSetAsync(RedisKey, request.FileId, request.Value);
 	}
 }

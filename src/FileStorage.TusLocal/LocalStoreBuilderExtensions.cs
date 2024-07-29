@@ -1,23 +1,27 @@
+using FileStorage.Core;
 using Microsoft.Extensions.DependencyInjection;
+using SolidTUS.Builders;
 using SolidTUS.Extensions;
 using SolidTUS.Models;
 
 namespace FileStorage.TusLocal;
 
-public static class ServiceCollectionExtensions
+public static class LocalStoreBuilderExtensions
 {
-	public static IServiceCollection AddTusLocalStorage(this IServiceCollection services, Action<TusLocalOptions> optionsSetup)
+	public static TusBuilder AddTusLocalStorage(this LocalStoreBuilder builder, Action<TusLocalOptions> optionsSetup)
 	{
 		var options = new TusLocalOptions();
 		optionsSetup.Invoke(options);
-		return services.AddTusLocalStorage(options);
+		return builder.AddTusLocalStorage(options);
 	}
-	
-	public static IServiceCollection AddTusLocalStorage(this IServiceCollection services, TusLocalOptions options)
+
+	public static TusBuilder AddTusLocalStorage(this LocalStoreBuilder builder, TusLocalOptions options)
 	{
+		var services = builder.Services;
+
 		services.AddScoped<TusFileService>();
 
-		services.AddTus(o =>
+		return services.AddTus(o =>
 			{
 				//提供发现
 				o.HasTermination = true;
@@ -39,7 +43,5 @@ public static class ServiceCollectionExtensions
 				o.DirectoryPath = options.DirectoryPath;
 				o.MetaDirectoryPath = options.MetaDirectoryPath;
 			});
-
-		return services;
 	}
 }

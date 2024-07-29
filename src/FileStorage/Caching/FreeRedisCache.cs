@@ -3,24 +3,20 @@ using FreeRedis;
 
 namespace FileStorage.Caching;
 
-public sealed class FreeRedisCache(IRedisClient redisClient) : ICache
+public sealed class FreeRedisCache(
+	ConnectionStringBuilder connectionString,
+	params ConnectionStringBuilder[] slaveConnectionStrings)
+	: RedisClient(connectionString, slaveConnectionStrings), IRedisCache
 {
-	public IRedisClient RedisClient => redisClient;
-
 	public async Task AddAsync<T>(string key, T item, TimeSpan timeSpan)
 	{
-		await redisClient.SetAsync(key, item);
-		await redisClient.ExpireAsync(key, timeSpan.Seconds);
-	}
-
-	public async Task<T?> GetAsync<T>(string key)
-	{
-		return await redisClient.GetAsync<T>(key);
+		await SetAsync(key, item);
+		await ExpireAsync(key, timeSpan.Seconds);
 	}
 
 	public async Task<T?> GetOrCreateAsync<T>(string key, T item, TimeSpan timeSpan)
 	{
-		var v = await redisClient.GetAsync<T>(key);
+		var v = await GetAsync<T>(key);
 		if (v == null)
 		{
 			await AddAsync(key, item, timeSpan);
@@ -31,6 +27,6 @@ public sealed class FreeRedisCache(IRedisClient redisClient) : ICache
 
 	public async Task RemoveAsync(string key)
 	{
-		await redisClient.DelAsync(key);
+		await DelAsync(key);
 	}
 }

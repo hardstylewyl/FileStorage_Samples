@@ -10,4 +10,20 @@ public static class FileStoreageBuilderExtensions
 		setupAction.Invoke(optionsBuilder);
 		return builder;
 	}
+
+
+	public static FileStoreageBuilder AddRemoteStore(this FileStoreageBuilder builder, Action<RemoteStoreBuilder> setupAction)
+	{
+		var optionsBuilder = new RemoteStoreBuilder(builder);
+		setupAction.Invoke(optionsBuilder);
+		return builder;
+	}
+
+	public static FileStoreageBuilder AddLocalStore(this FileStoreageBuilder builder, Action<LocalStoreBuilder> setupAction)
+	{
+		var optionsBuilder = new LocalStoreBuilder(builder);
+		setupAction.Invoke(optionsBuilder);
+		return builder;
+	}
+
 }

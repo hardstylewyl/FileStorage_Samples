@@ -7,6 +7,4 @@ public interface ICache
 	Task AddAsync<T>(string key, T item, TimeSpan timeSpan);
 
 	Task RemoveAsync(string key);
-
-	Task<T?> GetAsync<T>(string key);
 }

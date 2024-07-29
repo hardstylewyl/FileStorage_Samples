@@ -21,13 +21,13 @@ public sealed class FileMetadataManager<TContext>(TContext dbContext) : IFileMet
 
 	public Task<FileMetadataEntity?> FindAsync(string md5, long size)
 	{
-		return FindAsync(FileMetadataEntity.BuildKey(md5, size));
+		return FindAsync(FileMetadataEntity.BuildFileId(md5, size));
 	}
-	public Task<FileMetadataEntity?> FindAsync(string key)
+	public Task<FileMetadataEntity?> FindAsync(string fileId)
 	{
 		return Store
 			.AsNoTracking()
-			.FirstOrDefaultAsync(x => x.Key == key);
+			.FirstOrDefaultAsync(x => x.FileId == fileId);
 	}
 
 	public Task<List<FileMetadataEntity>> GetAllAsync()
@@ -41,6 +41,15 @@ public sealed class FileMetadataManager<TContext>(TContext dbContext) : IFileMet
 	{
 		return Store
 			.AsNoTracking()
+			.Paged(pageNum, pageSize)
+			.ToListAsync();
+	}
+
+	public Task<List<FileMetadataEntity>> PagingGetByUserIdAsync(string userId, int pageNum, int pageSize)
+	{
+		return Store
+			.AsNoTracking()
+			.Where(x => x.UserId == userId)
 			.Paged(pageNum, pageSize)
 			.ToListAsync();
 	}

@@ -7,11 +7,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddTusLocalStorage(o =>
-{
-	o.MetaDirectoryPath = "../../TusLocal/meta/";
-	o.DirectoryPath = "../../TusLocal/meat/";
-});
+builder.Services.AddFileStoreage()
+	.AddLocalStore(x =>
+	{
+		x.AddTusLocalStorage(o =>
+		{
+			o.MetaDirectoryPath = "../../TusLocal/meta/";
+			o.DirectoryPath = "../../TusLocal/meat/";
+		});
+	});
 
 builder.Services.AddFileStoreage()
 	.AddCore(o =>
