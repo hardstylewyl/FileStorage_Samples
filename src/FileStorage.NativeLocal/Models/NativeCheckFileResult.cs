@@ -1,3 +1,3 @@
-﻿namespace FileStorage.NativeLocal.Models;
+namespace FileStorage.NativeLocal.Models;
 
-public sealed record NativeCheckFileResult(bool NotExist, List<int>? MissChunkList);
+public sealed record NativeCheckFileResult(bool NotExist, bool InProgress, List<int>? MissChunkList);

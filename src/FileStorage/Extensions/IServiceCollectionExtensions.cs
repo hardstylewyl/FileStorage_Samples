@@ -8,6 +8,5 @@ public static class IServiceCollectionExtensions
 	public static FileStoreageBuilder AddFileStoreage(this IServiceCollection services)
 	{
 		return new FileStoreageBuilder() { Services = services };
-
 	}
 }

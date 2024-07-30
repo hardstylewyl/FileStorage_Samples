@@ -1,6 +1,7 @@
 using FileStorage.Extensions;
 using FileStorage.TusLocal;
 using FileStorage.TusLocal.UrlStorage;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -36,6 +37,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
 app.MapTusStorageForRedis();
 
 app.Run();

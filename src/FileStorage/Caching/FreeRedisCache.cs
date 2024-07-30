@@ -1,4 +1,3 @@
-
 using FreeRedis;
 
 namespace FileStorage.Caching;

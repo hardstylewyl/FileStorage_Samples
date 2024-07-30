@@ -1,4 +1,4 @@
-﻿namespace FileStorage.MinioRemote;
+namespace FileStorage.MinioRemote;
 
 public sealed class MinioSyncState
 {

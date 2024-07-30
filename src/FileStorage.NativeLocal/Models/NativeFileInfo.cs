@@ -34,7 +34,6 @@ public sealed class NativeFileInfo(
 	//最后一次写入日期
 	public DateTime LastWriteDate { get; set; }
 
-
 	//写入成功字节
 	public void WriteSuccessByte(long chunkSeq)
 	{

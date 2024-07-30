@@ -7,18 +7,17 @@ namespace FileStorage.TusLocal.UrlStorage;
 
 public static class TusUrlStorageApi
 {
-
 	private const string RedisKey = "tus_urlstorage";
 
 	public static IEndpointRouteBuilder MapTusStorageForRedis(this IEndpointRouteBuilder app, string prefix = "TusStorage")
 	{
-		app.MapGet(prefix + "/FindAllUploads", FindAllUploads);
-		app.MapGet(prefix + "/FindUploadsByFileId", FindUploadsByFileId);
-		app.MapGet(prefix + "/RemoveUpload", RemoveUpload);
-		app.MapPost(prefix + "/AddUpload", AddUpload);
+		var api = app.MapGroup(prefix);
+		api.MapGet("/FindAllUploads", FindAllUploads);
+		api.MapGet("/FindUploadsByFileId", FindUploadsByFileId);
+		api.MapGet("/RemoveUpload", RemoveUpload);
+		api.MapPost("/AddUpload", AddUpload);
 		return app;
 	}
-
 
 	public static async Task<List<PreviousUpload>> FindAllUploads([FromServices] IRedisCache redisCache)
 	{
@@ -35,7 +34,6 @@ public static class TusUrlStorageApi
 		return await redisCache
 			.HGetAsync<PreviousUpload>(RedisKey, fileId);
 	}
-
 
 	public static async Task<long> RemoveUpload([FromServices] IRedisCache redisCache,
 		string fileId)

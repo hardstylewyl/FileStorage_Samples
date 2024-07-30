@@ -23,6 +23,7 @@ public sealed class FileMetadataManager<TContext>(TContext dbContext) : IFileMet
 	{
 		return FindAsync(FileMetadataEntity.BuildFileId(md5, size));
 	}
+
 	public Task<FileMetadataEntity?> FindAsync(string fileId)
 	{
 		return Store

@@ -6,7 +6,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
 builder.Services.AddFileStoreage()
 	.AddCore(o =>
 	{
@@ -27,9 +26,6 @@ builder.Services.AddFileStoreage()
 			c.EnableSSL = false;
 		});
 	});
-
-
-
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())

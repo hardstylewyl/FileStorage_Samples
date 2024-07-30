@@ -63,6 +63,4 @@ public static class RemoteStoreBuilderExtensions
 		});
 		services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
 	}
-
-
 }

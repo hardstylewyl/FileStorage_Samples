@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Caching.Memory;
 
 namespace FileStorage.Caching;
+
 public sealed class DefaultMemoryCache(IMemoryCache memoryCache) : ICache
 {
 	public Task AddAsync<T>(string key, T item, TimeSpan timeSpan)

@@ -16,6 +16,7 @@ public sealed class UploadToMinioJobArgs(
 
 	public Func<CancellationToken, Task> OnSuccessFunc { get; set; }
 		= ct => Task.CompletedTask;
+
 	public Func<CancellationToken, Task> OnFailedFunc { get; set; }
 		= ct => Task.CompletedTask;
 
@@ -24,6 +25,7 @@ public sealed class UploadToMinioJobArgs(
 		OnSuccessFunc = func;
 		return this;
 	}
+
 	public UploadToMinioJobArgs WithFailedCallback(Func<CancellationToken, Task> func)
 	{
 		OnFailedFunc = func;

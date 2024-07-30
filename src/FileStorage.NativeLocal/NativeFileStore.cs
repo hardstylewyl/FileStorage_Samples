@@ -47,7 +47,6 @@ public sealed class NativeFileStore(ILogger<NativeFileStore> logger, IOptions<Na
 			//写入分片成功记录成功位置
 			info.WriteSuccessByte(chunkSeq);
 			return true;
-
 		}
 		catch (Exception ex)
 		{
@@ -90,5 +89,4 @@ public sealed class NativeFileStore(ILogger<NativeFileStore> logger, IOptions<Na
 
 		return Path.Combine(TempDirectoryPath, filename);
 	}
-
 }

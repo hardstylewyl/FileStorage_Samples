@@ -1,4 +1,4 @@
-﻿namespace FileStorage.TusLocal.UrlStorage;
+namespace FileStorage.TusLocal.UrlStorage;
 
 public sealed class TusAddUploadRequest
 {

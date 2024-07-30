@@ -2,8 +2,8 @@ namespace FileStorage.EntityFramework;
 
 public sealed class FileMetadataEntity
 {
-
 #nullable disable
+
 	private FileMetadataEntity()
 	{
 	}
@@ -76,7 +76,6 @@ public sealed class FileMetadataEntity
 	///     上传时间
 	/// </summary>
 	public DateTime UploadTimeOnUtc { get; set; }
-
 
 	public static string BuildFileId(string md5, long size)
 	{

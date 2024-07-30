@@ -28,7 +28,6 @@ public sealed class MinioFileService(
 		var noice = Guid.NewGuid().ToString("N");
 		var objectName = noice + "." + extension;
 
-
 		var args = new PutObjectArgs()
 			.WithBucket(BucketName)
 			.WithObject(objectName)
@@ -62,5 +61,4 @@ public sealed class MinioFileService(
 			await stream.DisposeAsync();
 		}
 	}
-
 }

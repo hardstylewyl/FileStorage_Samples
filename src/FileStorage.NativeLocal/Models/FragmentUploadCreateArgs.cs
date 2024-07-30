@@ -1,9 +1,10 @@
-﻿namespace FileStorage.NativeLocal.Models;
+namespace FileStorage.NativeLocal.Models;
 
-public sealed class FragmentUploadCreateArgs
+public class FragmentUploadCreateArgs
 {
 	/// fileId: {md5}_{size}
 	public string FileId { get; set; } = string.Empty;
+
 	public string Filename { get; set; } = string.Empty;
 	public string Extension { get; set; } = string.Empty;
 	public int ChunkCount { get; set; } = 0;

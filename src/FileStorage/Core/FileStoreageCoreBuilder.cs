@@ -11,6 +11,7 @@ namespace FileStorage.Core;
 public sealed class FileStoreageCoreBuilder(FileStoreageBuilder InnerBuilder)
 {
 	public IServiceCollection Services => InnerBuilder.Services;
+
 	public FileStoreageCoreBuilder UseDbContext<TDbContext>()
 		where TDbContext : DbContext
 	{
@@ -40,7 +41,6 @@ public sealed class FileStoreageCoreBuilder(FileStoreageBuilder InnerBuilder)
 		return this;
 	}
 
-
 	public FileStoreageCoreBuilder UseFreeRedisCache(Action<FreeRedisCacheOptions>? optionsSetup)
 	{
 		var options = new FreeRedisCacheOptions();
@@ -48,13 +48,11 @@ public sealed class FileStoreageCoreBuilder(FileStoreageBuilder InnerBuilder)
 		return UseFreeRedisCache(options);
 	}
 
-
 	public FileStoreageCoreBuilder UseFreeRedisCache(string configuration)
 	{
 		var options = new FreeRedisCacheOptions() { Configuration = configuration };
 		return UseFreeRedisCache(options);
 	}
-
 
 	public FileStoreageCoreBuilder UseFreeRedisCache(FreeRedisCacheOptions options)
 	{
@@ -80,5 +78,4 @@ public sealed class FileStoreageCoreBuilder(FileStoreageBuilder InnerBuilder)
 
 		return this;
 	}
-
 }

@@ -45,5 +45,4 @@ public sealed class MinioSyncStateCache(IRedisCache redisCache)
 	{
 		return redisCache.HDelAsync(RedisKey, fileId);
 	}
-
 }

@@ -93,7 +93,6 @@ public sealed class NativeFileConfigStore(
 			}
 			catch (Exception)
 			{
-
 			}
 
 			if (info is not null)

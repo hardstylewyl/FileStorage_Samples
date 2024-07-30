@@ -13,5 +13,4 @@ public sealed class NativeLocalOptions
 	///     服务端和客户端需保持一致
 	/// </summary>
 	public long ChunkSize { get; set; } = 5242880L;
-
 }

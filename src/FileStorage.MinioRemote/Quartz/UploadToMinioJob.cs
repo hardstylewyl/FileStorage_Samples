@@ -1,4 +1,4 @@
-﻿using FileStorage.EntityFramework;
+using FileStorage.EntityFramework;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Quartz;
@@ -18,7 +18,6 @@ public sealed class UploadToMinioJob(
 
 	public async Task Execute(IJobExecutionContext context)
 	{
-
 		if (context.MergedJobDataMap.TryGetValue(UploadToMinioJobArgs.Key, out var a)
 			&& a is UploadToMinioJobArgs args)
 		{
@@ -37,12 +36,10 @@ public sealed class UploadToMinioJob(
 				await minioSyncStateCache.SyncErrorAsync(args.FileId, ex.Message, ex.StackTrace!);
 				throw;
 			}
-
 		}
 
 		logger.LogError("Exec UploadToMinio Task Not Args {Time}", DateTimeOffset.Now);
 	}
-
 
 	private async Task DoExecuteAsync(UploadToMinioJobArgs args, CancellationToken ct)
 	{

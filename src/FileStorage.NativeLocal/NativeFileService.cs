@@ -1,4 +1,5 @@
-using System.Security.Cryptography;
+using FileStorage.Extensions;
+using FileStorage.Models;
 using FileStorage.NativeLocal.Models;
 using Microsoft.Extensions.Logging;
 
@@ -14,18 +15,23 @@ public sealed class NativeFileService(
 	{
 		var info = await configStore.GetInfoAsync(fileId);
 
-		return info == null
-			? new NativeCheckFileResult(true, null)
-			: new NativeCheckFileResult(false, info.GetMissingChunks().ToList());
+		if (info == null)
+		{
+			return new NativeCheckFileResult(true, false, null);
+		}
+
+		return info.IsCompleted()
+			? new NativeCheckFileResult(false, false, null)
+			: new NativeCheckFileResult(false, true, info.GetMissingChunks().ToList());
 	}
 
 	//分片配置创建
-	public async Task<bool> FragmentUploadCreateAsync(FragmentUploadCreateArgs args)
+	public async Task<(bool Success, Error? error)> FragmentUploadCreateAsync(FragmentUploadCreateArgs args)
 	{
 		var info = await configStore.GetInfoAsync(args.FileId);
 		if (info != null)
 		{
-			return false;
+			return (false, NativeLocalErrors.FileUploadInfoAlreadyExist);
 		}
 
 		info = new NativeFileInfo(
@@ -36,16 +42,17 @@ public sealed class NativeFileService(
 			//文件名使用文件id+扩展名
 			args.FileId + args.Extension);
 
-		return await configStore.CreateOrUpdateInfoAsync(info);
+		var created = await configStore.CreateOrUpdateInfoAsync(info);
+		return (created, created ? null : NativeLocalErrors.FileUploadInfoCreateFailed);
 	}
 
 	//分片数据上传
-	public async Task<bool> FragmentUploadAsync(FragmentUploadContext context)
+	public async Task<(bool Success, Error? error)> FragmentUploadAsync(FragmentUploadContext context)
 	{
 		var info = await configStore.GetInfoAsync(context.FileId);
 		if (info is null)
 		{
-			return false;
+			return (false, NativeLocalErrors.FileUploadInfoNotFound);
 		}
 
 		//开启远程流
@@ -54,23 +61,22 @@ public sealed class NativeFileService(
 		//如果开启了md5检查
 		if (context.IsCheckMd5)
 		{
-			var md5Valid = await CheckMd5Async(inputStream, context.Md5);
+			var md5Valid = await inputStream.CheckMd5Async(context.Md5);
 			if (!md5Valid)
 			{
 				logger.LogWarning("FileId [{id}] ChunkSeq [{seq}] Md5 Check Fail", info.FileId, context.ChunkSeq);
-				return false;
+				return (false, NativeLocalErrors.Md5CheckFailed);
 			}
 
 			//md5校验完成需要重试设置文件流位置为初始位置
 			inputStream.Seek(0, SeekOrigin.Begin);
 		}
 
-
 		//写入分片数据，写入成功会更新info中的指定标记位
 		var writeSuccess = await fileStore.WriteFragmentDataAsync(info, context.ChunkSeq, inputStream);
 		if (!writeSuccess)
 		{
-			return false;
+			return (false, NativeLocalErrors.WriteFileFailed);
 		}
 
 		//释放流
@@ -79,7 +85,6 @@ public sealed class NativeFileService(
 		//更新配置
 		await configStore.CreateOrUpdateInfoAsync(info);
 
-
 		//可选文件上传完成回调
 		var completedFunc = context.OnCompletedCallbackFunc;
 		if (info.IsCompleted() && completedFunc != null)
@@ -87,21 +92,6 @@ public sealed class NativeFileService(
 			await completedFunc(info);
 		}
 
-		return true;
+		return (true, null);
 	}
-
-	//检查分片流的md5是否正确
-	public async static Task<bool> CheckMd5Async(Stream stream, string md5Value)
-	{
-		byte[] hashBytes;
-		using (var md5 = MD5.Create())
-		{
-			hashBytes = await md5.ComputeHashAsync(stream);
-		}
-
-		var md5Hash = BitConverter.ToString(hashBytes).Replace("-", "");
-
-		return string.Equals(md5Hash, md5Value, StringComparison.OrdinalIgnoreCase);
-	}
-
 }

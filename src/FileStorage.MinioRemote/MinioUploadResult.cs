@@ -1,4 +1,4 @@
-﻿namespace FileStorage.MinioRemote;
+namespace FileStorage.MinioRemote;
 
 public sealed class MinioUploadResult
 {
@@ -13,6 +13,7 @@ public sealed class MinioUploadResult
 
 	//minio对象名
 	public string ObjectName { get; set; } = string.Empty;
+
 	public bool IsSuccess { get; set; } = false;
 	public Exception? Exception { get; set; }
 }

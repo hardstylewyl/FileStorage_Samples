@@ -1,6 +1,7 @@
 using FileStorage.Extensions;
 using FileStorage.NativeLocal;
 using Microsoft.Extensions.DependencyInjection;
+
 var services = new ServiceCollection();
 services.AddLogging();
 
@@ -10,7 +11,6 @@ var configPath = Path.Combine(Path.GetTempPath(), "NativeLocal.Test/ConfigDirect
 if (!Directory.Exists(tempPath))
 {
 	Directory.CreateDirectory(tempPath);
-
 }
 if (!Directory.Exists(configPath))
 {
@@ -39,5 +39,3 @@ var created = await nativeFileService.FragmentUploadCreateAsync(new FileStorage.
 	Extension = ".zip",
 	Filename = "a.zip"
 });
-
-
