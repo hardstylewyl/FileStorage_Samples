@@ -1,0 +1,10 @@
+*.md
+*.svg
+*.ttf
+*.woff
+dist
+node_modules
+public
+test
+dev-dist
+auto-script
