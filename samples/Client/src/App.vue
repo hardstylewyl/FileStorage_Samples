@@ -3,11 +3,15 @@
 </script>
 
 <template>
-  <RouterView>
-    <template #default="{ Component }">
-      <Transition>
-        <Component :is="Component" />
-      </Transition>
-    </template>
-  </RouterView>
+  <VApp>
+    <VMain>
+      <RouterView>
+        <template #default="{ Component }">
+          <Transition>
+            <Component :is="Component" />
+          </Transition>
+        </template>
+      </RouterView>
+    </VMain>
+  </VApp>
 </template>

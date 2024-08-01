@@ -1,3 +1,5 @@
+
+const baseURL = import.meta.env.VITE_BASE_URL
 export const urls = {
 	// FileBase
 	CheckFile: '/CheckFile',
@@ -6,7 +8,7 @@ export const urls = {
 	FragmentUploadCreate: '/Native/FragmentUploadCreate',
 	FragmentUpload: '/Native/FragmentUpload',
 	// Tus
-	TusEndpoint: '/upload',
+	TusEndpoint: `${baseURL}/upload`,
 	// TusUrlStorageApi
 	FindAllUploads: '/TusStorage/FindAllUploads',
 	FindUploadsByFileId: '/TusStorage/FindUploadsByFileId',

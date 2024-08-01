@@ -11,6 +11,8 @@ interface ImportMetaEnv {
 	VITE_COMMON: string
 	VITE_DEV: string
 	VITE_PROD: string
+
+	VITE_BASE_URL: string
 }
 
 interface ImportMeta {

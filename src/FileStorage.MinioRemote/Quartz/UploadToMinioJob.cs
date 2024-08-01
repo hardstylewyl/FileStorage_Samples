@@ -18,27 +18,28 @@ public sealed class UploadToMinioJob(
 
 	public async Task Execute(IJobExecutionContext context)
 	{
-		if (context.MergedJobDataMap.TryGetValue(UploadToMinioJobArgs.Key, out var a)
-			&& a is UploadToMinioJobArgs args)
+		if (!(context.MergedJobDataMap.TryGetValue(UploadToMinioJobArgs.Key, out var a)
+			&& a is UploadToMinioJobArgs args))
 		{
-			try
-			{
-				//开启同步状态
-				await minioSyncStateCache.StartSyncStateAsync(args.FileId);
-				//进行上传
-				await UploadPolicy
-					.ExecuteAsync(ct => DoExecuteAsync(args, ct),
-					context.CancellationToken);
-			}
-			catch (Exception ex)
-			{
-				//出错了写状态
-				await minioSyncStateCache.SyncErrorAsync(args.FileId, ex.Message, ex.StackTrace!);
-				throw;
-			}
+			logger.LogError("Exec UploadToMinio Task Not Args {Time}", DateTimeOffset.Now);
+			return;
 		}
 
-		logger.LogError("Exec UploadToMinio Task Not Args {Time}", DateTimeOffset.Now);
+		try
+		{
+			//开启同步状态
+			await minioSyncStateCache.StartSyncStateAsync(args.FileId);
+			//进行上传
+			await UploadPolicy
+				.ExecuteAsync(ct => DoExecuteAsync(args, ct),
+				context.CancellationToken);
+		}
+		catch (Exception ex)
+		{
+			//出错了写状态
+			await minioSyncStateCache.SyncErrorAsync(args.FileId, ex.Message, ex.StackTrace!);
+			throw;
+		}
 	}
 
 	private async Task DoExecuteAsync(UploadToMinioJobArgs args, CancellationToken ct)

@@ -103,8 +103,8 @@ public sealed class UploadToMinioJobService(
 		if (!scheduler.IsStarted)
 			await scheduler.Start();
 
-		var jobKey = new JobKey(Guid.NewGuid().ToString("N"), "");
-		var triggerKey = new TriggerKey(Guid.NewGuid().ToString("N"), "");
+		var jobKey = new JobKey(Guid.NewGuid().ToString("N"), nameof(UploadToMinioJob));
+		var triggerKey = new TriggerKey(Guid.NewGuid().ToString("N"), nameof(UploadToMinioJob));
 
 		//定义Job
 		var jobDetail = JobBuilder.Create<UploadToMinioJob>()

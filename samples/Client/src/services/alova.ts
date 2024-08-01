@@ -3,8 +3,11 @@ import { axiosRequestAdapter } from '@alova/adapter-axios'
 import { createAlova } from 'alova'
 import VueHook from 'alova/vue'
 
+const baseURL = import.meta.env.VITE_BASE_URL
+console.log(baseURL)
+
 export const alovaIns = createAlova({
-	baseURL: '/',
+	baseURL: baseURL,
 	// 在vue项目下引入VueHook，它可以帮我们用vue的ref函数创建请求相关的，可以被alova管理的状态
 	statesHook: VueHook,
 	// axiosRequestAdapter GlobalFetch

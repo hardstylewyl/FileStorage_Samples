@@ -1,4 +1,5 @@
 using FileStorage.Caching;
+using FileStorage.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -19,33 +20,33 @@ public static class TusUrlStorageApi
 		return app;
 	}
 
-	public static async Task<List<PreviousUpload>> FindAllUploads([FromServices] IRedisCache redisCache)
+	public static async Task<Result<List<PreviousUpload>>> FindAllUploads([FromServices] IRedisCache redisCache)
 	{
 		var result = await redisCache
 			.HGetAllAsync<PreviousUpload>(RedisKey);
 
 		return
-			result.Count != 0 ? [.. result.Values] : [];
+			Result.Success(result.Count != 0 ? result.Values.ToList() : []);
 	}
 
-	public static async Task<PreviousUpload> FindUploadsByFileId([FromServices] IRedisCache redisCache,
+	public static async Task<Result<PreviousUpload>> FindUploadsByFileId([FromServices] IRedisCache redisCache,
 		string fileId)
 	{
-		return await redisCache
-			.HGetAsync<PreviousUpload>(RedisKey, fileId);
+		return Result.Success(await redisCache
+			.HGetAsync<PreviousUpload>(RedisKey, fileId));
 	}
 
-	public static async Task<long> RemoveUpload([FromServices] IRedisCache redisCache,
+	public static async Task<Result> RemoveUpload([FromServices] IRedisCache redisCache,
 		string fileId)
 	{
-		return await redisCache
-			.HDelAsync(RedisKey, fileId);
+		return Result.Success(await redisCache
+			.HDelAsync(RedisKey, fileId));
 	}
 
-	public static async Task<long> AddUpload([FromServices] IRedisCache redisCache,
+	public static async Task<Result> AddUpload([FromServices] IRedisCache redisCache,
 		[FromBody] TusAddUploadRequest request)
 	{
-		return await redisCache
-			.HSetAsync(RedisKey, request.FileId, request.Value);
+		return Result.Success(await redisCache
+			.HSetAsync(RedisKey, request.FileId, request.Value));
 	}
 }

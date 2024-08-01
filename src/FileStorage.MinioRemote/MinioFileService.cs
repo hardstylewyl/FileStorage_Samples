@@ -11,7 +11,7 @@ public class UploadToMinioProgressReport(ILogger logger, string fileId) : IProgr
 	public void Report(ProgressReport value)
 	{
 		var progres = value.Percentage * 1.0 / value.TotalBytesTransferred;
-		logger.LogInformation("FileId [{id}] Upload Progress [{pro}]", fileId, progres);
+		logger.LogInformation("FileId [{id}] Upload Progress [{pro}]", fileId, Math.Round(progres, 2));
 	}
 }
 

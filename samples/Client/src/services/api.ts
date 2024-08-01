@@ -26,7 +26,7 @@ export const api = {
 	// Tus: ()=>void 0,
 	// TusUrlStorageApi
 	FindAllUploads: () => getRequestR<PreviousUpload[]>(urls.FindAllUploads),
-	FindUploadsByFileId: (fildId: string) => getRequestR<PreviousUpload>(urls.FindUploadsByFileId, { fildId }),
-	RemoveUpload: (fildId: string) => getRequest(urls.RemoveUpload, { fildId }),
+	FindUploadsByFileId: (fileId: string) => getRequestR<PreviousUpload>(urls.FindUploadsByFileId, { fileId }),
+	RemoveUpload: (fileId: string) => getRequest(urls.RemoveUpload, { fileId }),
 	AddUpload: (request: TusAddUploadRequest) => postRequest(urls.AddUpload, request),
 }
