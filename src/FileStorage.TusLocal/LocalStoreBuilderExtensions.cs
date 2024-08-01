@@ -1,4 +1,5 @@
 using FileStorage.Core;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SolidTUS.Builders;
 using SolidTUS.Extensions;
@@ -12,10 +13,24 @@ public static class LocalStoreBuilderExtensions
 	{
 		var options = new TusLocalOptions();
 		optionsSetup.Invoke(options);
-		return builder.AddTusLocalStorage(options);
+		builder.Services.Configure(optionsSetup);
+		return builder.AddTusLocalStorageCore(options);
 	}
 
-	public static TusBuilder AddTusLocalStorage(this LocalStoreBuilder builder, TusLocalOptions options)
+	public static TusBuilder AddTusLocalStorage(this LocalStoreBuilder builder, IConfiguration configuration)
+	{
+		builder.Services.Configure<TusLocalOptions>(configuration);
+		return builder.AddTusLocalStorageCore(configuration.Get<TusLocalOptions>()!);
+	}
+
+	public static TusBuilder AddTusLocalStorage(this LocalStoreBuilder builder, IConfiguration configuration, string name)
+	{
+		var configurationSection = configuration.GetRequiredSection(name);
+		builder.Services.Configure<TusLocalOptions>(configurationSection);
+		return builder.AddTusLocalStorageCore(configurationSection.Get<TusLocalOptions>()!);
+	}
+
+	public static TusBuilder AddTusLocalStorageCore(this LocalStoreBuilder builder, TusLocalOptions options)
 	{
 		var services = builder.Services;
 

@@ -1,7 +1,7 @@
-import { resolve } from 'path'
-import { defineConfig } from 'vite'
 import Vue from '@vitejs/plugin-vue'
 import VueJsx from '@vitejs/plugin-vue-jsx'
+import { resolve } from 'path'
+import { defineConfig } from 'vite'
 // 浏览器css兼容前缀插件
 import autoprefixer from 'autoprefixer'
 // 兼容低版本浏览器插件

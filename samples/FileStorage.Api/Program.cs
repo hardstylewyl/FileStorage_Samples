@@ -75,7 +75,8 @@ builder.Services.AddFileStoreage()
 
 //添加调度服务
 builder.Services.AddSingleton<UploadToMinioJobService>();
-
+//检查或创建配置目录
+builder.Services.AddHostedService<CheckOrCreateStoreDirectoryHostedService>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

@@ -222,7 +222,7 @@ async function Native_FragmentUpload(
 
 		// 构建上传请求
 		function buildRequest(result: CalculateChunkResponse) {
-			return <UploadRequestTask> {
+			return <UploadRequestTask>{
 				cancelToken,
 				request: {
 					fileId: result.fileId,
@@ -257,7 +257,7 @@ type UploadRequestTask = {
 }
 
 // 最大请求数量限制最大请求数量为1
-const MAX_CONCURRENT_TASKS = 4
+const MAX_CONCURRENT_TASKS = 1
 // 活跃的任务数量
 let activeTasks = 0
 // 任务队列

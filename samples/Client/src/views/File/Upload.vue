@@ -5,11 +5,13 @@ import { uploadService } from '@/services/upload';
 import { TusUploadAsync } from '@/services/upload/tus-uploader';
 import { cancelTokenUtil, type CancellationToken, type CancellationTokenSource } from '@/utils';
 import { useFileDialog } from '@vueuse/core';
+import { NativeUploadAsync } from '@/services/upload/native-uploader';
 
 
 const { open, onChange } = useFileDialog({ accept: '*', multiple: false })
 onChange(handleFileSelected)
 
+const upload_type = ref<'tus' | 'native'>('tus')
 
 let cts: CancellationTokenSource
 let task = ref<UploadTask>(null!)
@@ -27,7 +29,7 @@ async function handleFileSelected(files: FileList | null) {
             .BuildContextAsync(files[0],
                 cts.token,
                 buildProgressReport(task, true),
-                false)
+                upload_type.value === 'native')
 
         const { status } = task.value.context = context
 
@@ -47,11 +49,18 @@ async function handleFileSelected(files: FileList | null) {
         //上传前开启一个轮询的定时器，更新上传状态
         listenerTaskStatus(cts.token)
 
-        task.value.uploadStatus = 'uploading'
         //2.上传
-        await TusUploadAsync(context,
-            cts.token,
-            buildProgressReport(task, false))
+        task.value.uploadStatus = 'uploading'
+        if (upload_type.value === 'tus') {
+            await TusUploadAsync(context,
+                cts.token,
+                buildProgressReport(task, false))
+        } else {
+            await NativeUploadAsync(context,
+                cts.token,
+                buildProgressReport(task, false))
+        }
+
 
 
     } catch (e) {
@@ -92,9 +101,15 @@ async function resume() {
         //轮询更新任务状态，可以通过取消令牌随时取消轮询工作
         listenerTaskStatus(cts.token)
         //2.使用上传上下文进行上传，可取消
-        await TusUploadAsync(task.value.context,
-            cts.token,
-            buildProgressReport(task, false))
+        if (upload_type.value === 'tus') {
+            await TusUploadAsync(task.value.context,
+                cts.token,
+                buildProgressReport(task, false))
+        } else {
+            await NativeUploadAsync(task.value.context,
+                cts.token,
+                buildProgressReport(task, false))
+        }
     } catch (e) {
         if (cancelTokenUtil.isCancel(e)) {
             task.value.uploadStatus = 'canceled'
@@ -199,22 +214,28 @@ function listenerTaskStatus(cancelToken: CancellationToken) {
 
 
 
-
 </script>
 <template>
-    <div>
-        <h1>Tus上传测试</h1>
-        <VBtn color="primary" @click="open()">选择一个文件开始上传</VBtn>
-        <VBtn color="red" @click="cancel()">取消</VBtn>
-        <VBtn color="warning" @click="pause()">暂停</VBtn>
-        <VBtn color="green" @click="resume()">恢复</VBtn>
-        <div>task:{{ task }}</div>
-
+    <div style="padding: 1rem;">
+        <h1>{{ upload_type }}上传测试</h1>
+        <h3>上传类型</h3>
+        <VSelect width="300px" v-model="upload_type" :items="['tus', 'native']" />
+        <VBtnGroup >
+            <VBtn color="primary" @click="open()">选择一个文件开始上传</VBtn>
+            <VBtn color="red" @click="cancel()">取消</VBtn>
+            <VBtn color="warning" @click="pause()">暂停</VBtn>
+            <VBtn color="green" @click="resume()">恢复</VBtn>
+        </VBtnGroup>
+        <div><h3>任务状态 :{{ task ? task.uploadStatus : 'none' }}</h3></div>
         <div v-if="task" style="width: 600px;">
-            hashProgress:
+            hashProgress:{{ (task?.hashProgress).toFixed(2) + '%' }}
             <VProgressLinear color="primary" :model-value="task.hashProgress" />
-            uploadProgress:
+            uploadProgress:{{ (task?.uploadProgress).toFixed(2) + '%' }}
             <VProgressLinear color="green" :model-value="task.uploadProgress" />
+        </div>
+        <div v-if="task">
+            <h3>任务详情</h3>
+            <VTextarea :rows="20" width="1000px" :model-value="JSON.stringify(task, null, 4)" />
         </div>
 
     </div>

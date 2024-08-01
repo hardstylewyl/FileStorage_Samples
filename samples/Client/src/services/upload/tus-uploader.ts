@@ -63,26 +63,26 @@ export function TusUploadAsync(
 				// 生成文件指纹，这里使用md5
 				fingerprint: () => Promise.resolve(md5!),
 				// 请求前配置
-				onBeforeRequest: function (req) {
+				onBeforeRequest: function(req) {
 					// 配置请求前带cookies
 					const xhr = req.getUnderlyingObject()
 					xhr.withCredentials = true
 					return Promise.resolve()
 				},
 				// 当出现错误了
-				onError: function (error) {
+				onError: function(error) {
 					console.log('tus上传出错', error)
 					offCanceled?.()
 					reject(error)
 				},
 				// 进度发生变化
-				onProgress: function (bytesUploaded, bytesTotal) {
+				onProgress: function(bytesUploaded, bytesTotal) {
 					console.log('tus上传进度变化:', bytesUploaded, bytesTotal)
 					// 上传进度报告
 					uploadProgressReport?.(bytesUploaded, bytesTotal)
 				},
 				// 上传成功
-				onSuccess: function () {
+				onSuccess: function() {
 					console.log('tus上传成功')
 					offCanceled?.()
 					resolve()

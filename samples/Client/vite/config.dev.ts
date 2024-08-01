@@ -11,7 +11,7 @@ export default mergeConfig({
 		// 运行时检查类型
 		checker({
 			vueTsc: true,
-			stylelint: undefined
+			stylelint: undefined,
 		}),
 		// ssl证书证书
 		mkcert(),

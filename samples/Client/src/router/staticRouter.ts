@@ -3,6 +3,6 @@ import type { RouteRecordRaw } from 'vue-router'
 export const staticRouter: RouteRecordRaw[] = [
 	{
 		path: '/',
-		component: () => import('@/views/File/TusUpload.vue'),
+		component: () => import('@/views/File/Upload.vue'),
 	},
 ]
