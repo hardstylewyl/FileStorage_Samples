@@ -37,7 +37,7 @@ const initI18n = () => {
 	setLanguage(lang || 'zh-CN')
 }
 
-// 动态加载语言资源文件
+// //动态加载语言资源文件
 // async function loadLocaleMessages(locale: string) {
 //     // 这里可以换成axios从服务器加载
 //     const messages = await import(/* webpackChunkName: "locale-[request]" */ `./i18n/lang/${locale}.json`)

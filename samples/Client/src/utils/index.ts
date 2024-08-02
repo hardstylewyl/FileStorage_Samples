@@ -10,10 +10,12 @@ export * from './module/format/FileSizeFormat'
 export * from './module/caching'
 // 取消令牌的支持
 export * from './module/cancelTokenUtil'
-// stringUtil
-export * from './module/StringUtil'
 // 检查器
 export * from './module/checker'
+// 消息提示
+export * from './module/messagePrompt'
+// stringUtil
+export * from './module/StringUtil'
 // 时间间隔
 export * from './module/TimeSpan'
 // ua标识

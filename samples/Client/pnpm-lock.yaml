@@ -38,6 +38,9 @@ importers:
       vue-i18n:
         specifier: ^9.13.1
         version: 9.13.1(vue@3.4.34(typescript@5.5.4))
+      vue-m-message:
+        specifier: ^4.0.2
+        version: 4.0.2
       vue-router:
         specifier: ^4.4.0
         version: 4.4.0(vue@3.4.34(typescript@5.5.4))
@@ -4197,6 +4200,9 @@ packages:
     engines: {node: '>= 16'}
     peerDependencies:
       vue: ^3.0.0
+
+  vue-m-message@4.0.2:
+    resolution: {integrity: sha512-6rTKtIzj2vXyyY6YIcSHDmJNz4R1HuxATgr8gf0c+DjcknwCkmfBggKNDIgshnCyqgL70TWsVrgcqQzl4xsYfQ==}
 
   vue-router@4.4.0:
     resolution: {integrity: sha512-HB+t2p611aIZraV2aPSRNXf0Z/oLZFrlygJm+sZbdJaW6lcFqEDQwnzUBXn+DApw+/QzDU/I9TeWx9izEjTmsA==}
@@ -8796,6 +8802,8 @@ snapshots:
       '@intlify/shared': 9.13.1
       '@vue/devtools-api': 6.6.3
       vue: 3.4.34(typescript@5.5.4)
+
+  vue-m-message@4.0.2: {}
 
   vue-router@4.4.0(vue@3.4.34(typescript@5.5.4)):
     dependencies:

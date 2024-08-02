@@ -24,6 +24,7 @@
     "tus-js-client": "^4.1.0",
     "vue": "^3.4.34",
     "vue-i18n": "^9.13.1",
+    "vue-m-message": "^4.0.2",
     "vue-router": "^4.4.0",
     "vuetify": "3.6.14"
   },

@@ -3,7 +3,7 @@ import type { ProgressReport, UploadTask } from '@/types';
 import { FileUploadStatus } from '@/contracts';
 import { uploadService } from '@/services/upload';
 import { TusUploadAsync } from '@/services/upload/tus-uploader';
-import { cancelTokenUtil, type CancellationToken, type CancellationTokenSource } from '@/utils';
+import { cancelTokenUtil, messagePrompt, type CancellationToken, type CancellationTokenSource } from '@/utils';
 import { useFileDialog } from '@vueuse/core';
 import { NativeUploadAsync } from '@/services/upload/native-uploader';
 
@@ -78,6 +78,7 @@ async function handleFileSelected(files: FileList | null) {
 }
 
 function cancel() {
+    messagePrompt.warning('取消当前上传任务')
     cts?.cancel()
 }
 
@@ -85,17 +86,18 @@ async function pause() {
     if (!task.value.context) return
     if (task.value.uploadStatus !== 'uploading') return
     if (task.value.uploadProgress >= 98) return
-    console.log('暂停当前上传的任务')
+    messagePrompt.info('正在暂停上传...')
     cts.cancel()
     const promise = cts.token.promise
     await promise
     task.value.uploadStatus = 'paused'
+    messagePrompt.success('暂停当前上传任务成功')
 }
 
 async function resume() {
     if (!task.value.context) return
     if (task.value.uploadStatus !== 'paused') return
-    console.log('恢复已经暂停的任务')
+    messagePrompt.warning('正在恢复上传...')
     cts = cancelTokenUtil.newSource()
     try {
         //轮询更新任务状态，可以通过取消令牌随时取消轮询工作
@@ -165,13 +167,16 @@ function listenerTaskStatus(cancelToken: CancellationToken) {
     const requestStatusAsync = async () => {
         const result = await uploadService
             .UploadCheckAsync(context, cancelToken)
-            .catch(_ => {
+            .then(r => {
+                task.value.uploadStatus = 'uploading'
+                return r
+            })
+            .catch(reason => {
                 clearInterval(timer)
                 task.value.uploadStatus = 'error'
+                context.errorMsg = reason
             })
-            .finally(() => {
-                task.value.uploadStatus = 'uploading'
-            })
+
 
         if (!result) return
 
@@ -211,22 +216,19 @@ function listenerTaskStatus(cancelToken: CancellationToken) {
 
 }
 
-
-
-
 </script>
 <template>
     <div style="padding: 1rem;">
         <h1>{{ upload_type }}上传测试</h1>
         <h3>上传类型</h3>
         <VSelect width="300px" v-model="upload_type" :items="['tus', 'native']" />
-        <VBtnGroup >
+        <VBtnGroup>
             <VBtn color="primary" @click="open()">选择一个文件开始上传</VBtn>
             <VBtn color="red" @click="cancel()">取消</VBtn>
             <VBtn color="warning" @click="pause()">暂停</VBtn>
             <VBtn color="green" @click="resume()">恢复</VBtn>
         </VBtnGroup>
-        <div><h3>任务状态 :{{ task ? task.uploadStatus : 'none' }}</h3></div>
+        <h3>任务状态 :{{ task ? task.uploadStatus : 'none' }}</h3>
         <div v-if="task" style="width: 600px;">
             hashProgress:{{ (task?.hashProgress).toFixed(2) + '%' }}
             <VProgressLinear color="primary" :model-value="task.hashProgress" />

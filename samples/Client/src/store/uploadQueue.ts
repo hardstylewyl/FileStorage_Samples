@@ -1,15 +1,15 @@
+import type { ProgressReport, UploadTask } from '@/types'
+import { reactive, ref, type Reactive } from 'vue'
+import { type CancellationTokenSource, cancelTokenUtil } from '@/utils'
 import { FileUploadStatus } from '@/contracts'
 import { uploadService } from '@/services/upload'
-import type { ProgressReport, UploadTask } from '@/types'
-import { type CancellationTokenSource, cancelTokenUtil } from '@/utils'
 import { defineStore } from 'pinia'
-import { reactive, ref } from 'vue'
 
 /*最大并行上传任务数目*/
 const MAX_UPLOAD_TASK_NUM = 3
 /*任务调度定时器间隔*/
 const DISPATCH_INTERVAL = 1500
-export const useUploadStore_v2 = defineStore('upload-v2', () => {
+export const useUploadQueueStore = defineStore('upload-queue', () => {
 	/*上传任务队列*/
 	const runningQueue = reactive<UploadTask[]>([])
 	/*等待队列*/
@@ -19,35 +19,6 @@ export const useUploadStore_v2 = defineStore('upload-v2', () => {
 	/*调度定时器*/
 	const dispatchTimer = ref<NodeJS.Timeout | null>(null)
 
-	/*启动一个上传任务，返回一个响应式对象，可能不会立即进行上传行为*/
-	function startUploadTask(
-		file: File,
-		onSuccess?: (fileUrl: string) => void,
-		onError?: (error: string) => void,
-		onCancel?: () => void,
-	): UploadTask {
-		const task = reactive<UploadTask>({
-			context: undefined,
-			cancelToken: undefined,
-			file: file,
-			filename: file.name,
-			extension: file.name.split('.').pop() ?? '',
-			hashProgress: 0,
-			uploadProgress: 0,
-			uploadStatus: 'waiting',
-			onSuccess,
-			onError,
-			onCancel,
-		})
-
-		/*放入等待队列，并立即尝试调度一个任务*/
-		waitingQueue.push(task)
-		_TryDispatch()
-
-		/*开启调度定时器进行调度循环*/
-		_startDispatchTimer()
-		return task
-	}
 
 	/*开始调度器定时器*/
 	function _startDispatchTimer() {
@@ -79,15 +50,12 @@ export const useUploadStore_v2 = defineStore('upload-v2', () => {
 				// 检查阶段
 				task.uploadStatus = 'hashing'
 				task.context = await uploadService
-					.BuildContextAsync(task.file, cts.token, changeProgress(true, task))
+					.BuildContextAsync(task.file, cts.token, buildProgressReport(true, task))
 			}
 
 			// 处理状态
 			const { status } = task.context
-			if (
-				status === 'error'
-				|| status === FileUploadStatus.syncFailed
-			) {
+			if (status === 'error' || status === FileUploadStatus.syncFailed) {
 				task.uploadStatus = 'error'
 				return
 			}
@@ -107,7 +75,7 @@ export const useUploadStore_v2 = defineStore('upload-v2', () => {
 			// 上传阶段
 			task.uploadStatus = 'uploading'
 			await uploadService
-				.UploadAsync(task.context, cts.token, changeProgress(false, task))
+				.UploadAsync(task.context, cts.token, buildProgressReport(false, task))
 		}
 
 		runner()
@@ -119,17 +87,39 @@ export const useUploadStore_v2 = defineStore('upload-v2', () => {
 			})
 	}
 
-	/*取消一个任务，要求：该任务处于hashing|uploading|waiting|paused状态*/
-	function cancelTask(task: UploadTask) {
-		console.log('取消任务', task)
+	/*启动一个上传任务，返回一个响应式对象，可能不会立即进行上传行为*/
+	function startUploadTask(
+		file: File,
+		onSuccess?: (fileUrl: string) => void,
+		onError?: (error: string) => void,
+		onCancel?: () => void,
+	): UploadTask {
+		const task = reactive<UploadTask>({
+			context: undefined,
+			cancelToken: undefined,
+			file: file,
+			filename: file.name,
+			extension: file.name.split('.').pop() ?? '',
+			hashProgress: 0,
+			uploadProgress: 0,
+			uploadStatus: 'waiting',
+			onSuccess,
+			onError,
+			onCancel,
+		})
 
-		const status = task.uploadStatus
-		if (
-			status !== 'hashing'
-			&& status !== 'uploading'
-			&& status !== 'waiting'
-			&& status !== 'paused'
-		) return
+		/*放入等待队列，并立即尝试调度一个任务*/
+		waitingQueue.push(task)
+		_TryDispatch()
+
+		/*开启调度定时器进行调度循环*/
+		_startDispatchTimer()
+		return task
+	}
+
+	/*取消一个任务，要求：该任务处于hashing|uploading|waiting|paused状态*/
+	function cancelTask(task: Reactive<UploadTask>) {
+		if (!canTaskOperate(task, 'cancel')) return
 
 		// 等待过程中取消
 		if (task.uploadStatus === 'waiting') {
@@ -151,11 +141,8 @@ export const useUploadStore_v2 = defineStore('upload-v2', () => {
 	}
 
 	/*暂停一个任务；要求：该任务处于上传状态，并且上传进度小于98*/
-	function pauseTask(task: UploadTask) {
-		console.log('暂停当前正在上传的任务', task)
-
-		if (task.uploadStatus !== 'uploading') return
-		if (task.uploadProgress >= 98) return
+	function pauseTask(task: Reactive<UploadTask>) {
+		if (!canTaskOperate(task, 'pause')) return
 
 		// 获取取消令牌源，执行取消动作
 		const cts = cancelTokenMap.get(task)!
@@ -169,11 +156,8 @@ export const useUploadStore_v2 = defineStore('upload-v2', () => {
 	}
 
 	/*恢复任务；要求：该任务处于暂停的状态*/
-	function resumeTask(task: UploadTask) {
-		console.log('恢复当前暂停的任务', task)
-
-		if (!task.context) return
-		if (task.uploadStatus !== 'paused') return
+	function resumeTask(task: Reactive<UploadTask>) {
+		if (!canTaskOperate(task, 'resume')) return
 
 		// 放入等待队列，等待调度器进行调度
 		waitingQueue.push(task)
@@ -189,6 +173,39 @@ export const useUploadStore_v2 = defineStore('upload-v2', () => {
 		resumeTask,
 	}
 })
+
+//查看该任务是否可以进行指定动作
+function canTaskOperate(task: Reactive<UploadTask>, operate: 'pause' | 'resume' | 'cancel' | 'download'): true | undefined {
+	if (!isReactive(task)) return
+
+	const { uploadStatus: status } = task
+	switch (operate) {
+		//暂停
+		case 'pause':
+			if (status !== 'uploading') return
+			if (task.uploadProgress >= 98) return
+			break
+		//恢复
+		case 'resume':
+			if (!task.context) return
+			if (status !== 'paused') return
+			break
+		//取消
+		case 'cancel':
+			if (status !== 'hashing' &&
+				status !== 'uploading' &&
+				status !== 'waiting' &&
+				status !== 'paused'
+			) return
+			break
+		//下载
+		case 'download':
+			if (status !== 'success') return
+			break
+	}
+
+	return true
+}
 
 /*处理task运行过程中的异常*/
 function handleCatch(task: UploadTask, reason?: any) {
@@ -219,12 +236,13 @@ function handleFinished(task: UploadTask) {
 	}
 }
 
-/*轮询请求更新task状态*/
-function listenerTaskStatus(task: UploadTask) {
+//轮询请求更新任务状态
+function listenerTaskStatus(task: Reactive<UploadTask>) {
+	if (!isReactive(task)) return false
 	const { context, cancelToken } = task
 	if (!context) return
 
-	// 轮询开始前取消，抛出异常
+	//轮询开始若取消，抛出异常
 	cancelToken?.throwIfRequested()
 
 	let timer: NodeJS.Timeout
@@ -232,86 +250,70 @@ function listenerTaskStatus(task: UploadTask) {
 	const fileSize = context.file.size
 	const interval = 500 + (fileSize / (1024 * 1024 * 37.5)) * 300
 
-	// 外部进行了取消动作,取消轮询
+	//取消轮询
 	cancelToken?.onCanceled(() => {
-		console.log('轮询已经被取消')
 		clearInterval(timer)
 		task.uploadStatus = 'canceled'
-		handleFinished(task)
+		task.onCancel?.()
 	})
 
-	// 通过请求，更新任务状态
-	const changeTaskStatus = async () => {
-		// 发送请求检查上传状态
+	//请求任务状态更新
+	const requestStatusAsync = async () => {
 		const result = await uploadService
 			.UploadCheckAsync(context, cancelToken)
-			.then((r) => {
+			.then(r => {
 				task.uploadStatus = 'uploading'
-				return Promise.resolve(r)
+				return r
 			})
 			.catch(reason => {
-				console.log('检查请求出错了', reason)
-				task.uploadStatus = 'error'
 				clearInterval(timer)
-				handleFinished(task)
+				task.uploadStatus = 'error'
+				task.onError?.(reason)
 			})
 
-		if (result) {
-			// 每次收到响应都更新状态
-			const { Status } = result
-			context.status = Status
-			/*上传中*/
-			if (Status === FileUploadStatus.inProgress) {
+
+		if (!result) return
+
+		switch (result.Status) {
+			case FileUploadStatus.inProgress: {
 				task.uploadStatus = 'uploading'
-				return
+				break
 			}
-
-			/*同步中*/
-			if (Status === FileUploadStatus.inSynchronizing) {
+			case FileUploadStatus.inSynchronizing: {
 				task.uploadStatus = 'syncing'
-				return
+				break
 			}
-
-			/*文件从来没有被上传过*/
-			if (Status === FileUploadStatus.notExist) {
-				return
+			case FileUploadStatus.notExist: {
+				//什么也不做
+				break
 			}
-
-			/*同步失败了*/
-			if (Status === FileUploadStatus.syncFailed) {
+			case FileUploadStatus.syncFailed: {
 				clearInterval(timer)
 				task.uploadStatus = 'error'
-				handleFinished(task)
-				return
+				break
 			}
-
-			/*上传完成了*/
-			if (Status === FileUploadStatus.completed) {
+			case FileUploadStatus.completed: {
 				clearInterval(timer)
-				task.uploadProgress = 100
 				task.uploadStatus = 'success'
+				task.uploadProgress = 100
 				context.fileUrl = result.FileUrl!
-				handleFinished(task)
+				task.onSuccess?.(result.FileUrl!)
+				break
 			}
 		}
 	}
 
-	// 首次执行一次
-	changeTaskStatus()
+	//首次执行一次
+	requestStatusAsync()
 
-	/*开启一个轮询，更新状态*/
-	timer = setInterval(changeTaskStatus, interval)
+	//开始轮询更新状态
+	timer = setInterval(requestStatusAsync, interval)
 }
 
 /*更新task进度，hash和上传进度*/
-function changeProgress(isHashProgress: boolean, task: UploadTask): ProgressReport {
-	if (isHashProgress) {
-		return (loaded, total) => {
-			task.hashProgress = loaded / total * 100
-		}
-	}
-
+function buildProgressReport(isHashProgress: boolean, task: UploadTask): ProgressReport {
+	const key = isHashProgress ? 'hashProgress' : 'uploadProgress'
 	return (loaded, total) => {
-		task.uploadProgress = loaded / total * 100
+		task[key] = (loaded * 100 / total)
 	}
 }
