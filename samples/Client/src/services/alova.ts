@@ -3,7 +3,7 @@ import { axiosRequestAdapter } from '@alova/adapter-axios'
 import { createAlova } from 'alova'
 import VueHook from 'alova/vue'
 
-const baseURL = import.meta.env.VITE_BASE_URL
+const baseURL = import.meta.env.VITE_API_BASE_URL
 console.log(baseURL)
 
 export const alovaIns = createAlova({

@@ -8,11 +8,8 @@
 // }
 // .env文件的环境变量类型声明
 interface ImportMetaEnv {
-	VITE_COMMON: string
-	VITE_DEV: string
-	VITE_PROD: string
 
-	VITE_BASE_URL: string
+	VITE_API_BASE_URL: string
 }
 
 interface ImportMeta {
