@@ -65,9 +65,9 @@ builder.Services.AddFileStoreage()
 	{
 		b.AddMinioRemoteStorage(o =>
 		{
-			o.AccessKey = "identityServer_user";
-			o.SecretKey = "identityServer_password";
-			o.BucketName = "filestorage";
+			o.AccessKey = "UOvHDimx2Wy74TQUnVzy";
+			o.SecretKey = "0T0kOPbQ6gHoybiHK1i0En3M3ue7Rofv3j0DURhq";
+			o.BucketName = "test-bucket";
 			o.Endpoint = "localhost:9000";
 			o.EnableSSL = false;
 		});
