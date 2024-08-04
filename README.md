@@ -30,7 +30,7 @@ orage.Api.csproj
 
 #### 2. 运行redis
 下载和运行过程省略...
-#### 3.下载Minio并运行
+#### 3. 下载Minio并运行
 windows版本下载地址
 https://dl.minio.org.cn/server/minio/release/windows-amd64/minio.exe
 
@@ -43,40 +43,40 @@ minio.exe server ./Data --console-address ":9001"
 #### 4. 配置minio
 浏览器进入 http://localhost:9001 账户和密码默认均为minioadmin （可以在命令行看到）
 
-- <b>4.1创建桶
+- 4.1创建桶
 ![alt text](./doc/image/4.11.png)
 （注意：需要记录桶名称一会用）
 ![alt text](./doc/image/4.12.png)
 
-- <b>4.2配置桶的访问策略
+- 4.2配置桶的访问策略
 ![alt text](./doc/image/4.21.png)
 ![alt text](./doc/image/4.22.png)
 ![alt text](./doc/image/4.23.png)
 ![alt text](./doc/image/4.24.png)
 
-- <b>4.3配置访问令牌
+- 4.3配置访问令牌
 ![alt text](./doc/image/4.31.png)
 ![alt text](./doc/image/4.32.png)
 （注意：保存好AccessKey和SecretKey一会用）
 ![alt text](./doc/image/4.33.png)
-#### 5.配置后端项目
-- <b>5.1配置minio</b><br>
+#### 5. 配置后端项目
+- 5.1配置minio
 进入到`FileStorage.Api`项目的`Program.cs`中
 填充4.1和4.3记录的minio的配置
 ![alt text](./doc/image/5.11.png)
-- <b>5.2配置redis</b><br>
+- 5.2配置redis
 ![alt text](./doc/image/5.12.png)
 配置好在根目录运行 
 ````
 dotnet run --project ./samples/FileStorage.Api/FileStorage.Api.csproj
 ````
 至此后端部分已经完成配置与启动
-#### 6.配置前端项目
-6.1 全局安装pnpm(可能需要管理员打开cmd/powershell)
+#### 6. 配置前端项目
+- 6.1 全局安装pnpm(可能需要管理员打开cmd/powershell)
 ````powershell
 npm install -g pnpm
 ````
-6.2 命令行或powershell进入目录 samples/Client
+- 6.2 命令行或powershell进入目录 samples/Client
 ````powershell
 #安装依赖
 pnpm instal
@@ -90,6 +90,6 @@ pnpm run dev
 ![alt text](./doc/image/p3.png)
 ![alt text](./doc/image/p4.png)
 
-## 🎉加入我们
+## 🎉 加入我们
 欢迎加入我们的.net qq交流群 737776595
 
