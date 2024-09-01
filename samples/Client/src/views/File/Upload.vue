@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { useFileDialog } from '@vueuse/core';
+
 import type { ProgressReport, UploadTask } from '@/types';
 import { FileUploadStatus } from '@/contracts';
 import { uploadService } from '@/services/upload';
 import { TusUploadAsync } from '@/services/upload/tus-uploader';
 import { cancelTokenUtil, messagePrompt, type CancellationToken, type CancellationTokenSource } from '@/utils';
-import { useFileDialog } from '@vueuse/core';
 import { NativeUploadAsync } from '@/services/upload/native-uploader';
 
 
@@ -14,7 +15,7 @@ onChange(handleFileSelected)
 const upload_type = ref<'tus' | 'native'>('tus')
 
 let cts: CancellationTokenSource
-let task = ref<UploadTask>(null!)
+const task = ref<UploadTask>(null!)
 
 async function handleFileSelected(files: FileList | null) {
     if (!files) return
@@ -218,28 +219,63 @@ function listenerTaskStatus(cancelToken: CancellationToken) {
 
 </script>
 <template>
-    <div style="padding: 1rem;">
-        <h1>{{ upload_type }}上传测试</h1>
-        <h3>上传类型</h3>
-        <VSelect width="300px" v-model="upload_type" :items="['tus', 'native']" />
-        <VBtnGroup>
-            <VBtn color="primary" @click="open()">选择一个文件开始上传</VBtn>
-            <VBtn color="red" @click="cancel()">取消</VBtn>
-            <VBtn color="warning" @click="pause()">暂停</VBtn>
-            <VBtn color="green" @click="resume()">恢复</VBtn>
-        </VBtnGroup>
-        <h3>任务状态 :{{ task ? task.uploadStatus : 'none' }}</h3>
-        <div v-if="task" style="width: 600px;">
-            hashProgress:{{ (task?.hashProgress).toFixed(2) + '%' }}
-            <VProgressLinear color="primary" :model-value="task.hashProgress" />
-            uploadProgress:{{ (task?.uploadProgress).toFixed(2) + '%' }}
-            <VProgressLinear color="green" :model-value="task.uploadProgress" />
-        </div>
-        <div v-if="task">
-            <h3>任务详情</h3>
-            <VTextarea :rows="20" width="1000px" :model-value="JSON.stringify(task, null, 4)" />
-        </div>
-
+  <div style="padding: 1rem;">
+    <h1>{{ upload_type }}上传测试</h1>
+    <h3>上传类型</h3>
+    <VSelect
+      v-model="upload_type"
+      width="300px"
+      :items="['tus', 'native']"
+    />
+    <VBtnGroup>
+      <VBtn
+        color="primary"
+        @click="open()"
+      >
+        选择一个文件开始上传
+      </VBtn>
+      <VBtn
+        color="red"
+        @click="cancel()"
+      >
+        取消
+      </VBtn>
+      <VBtn
+        color="warning"
+        @click="pause()"
+      >
+        暂停
+      </VBtn>
+      <VBtn
+        color="green"
+        @click="resume()"
+      >
+        恢复
+      </VBtn>
+    </VBtnGroup>
+    <h3>任务状态 :{{ task ? task.uploadStatus : 'none' }}</h3>
+    <div
+      v-if="task"
+      style="width: 600px;"
+    >
+      hashProgress:{{ (task?.hashProgress).toFixed(2) + '%' }}
+      <VProgressLinear
+        color="primary"
+        :model-value="task.hashProgress"
+      />
+      uploadProgress:{{ (task?.uploadProgress).toFixed(2) + '%' }}
+      <VProgressLinear
+        color="green"
+        :model-value="task.uploadProgress"
+      />
     </div>
-
+    <div v-if="task">
+      <h3>任务详情</h3>
+      <VTextarea
+        :rows="20"
+        width="1000px"
+        :model-value="JSON.stringify(task, null, 4)"
+      />
+    </div>
+  </div>
 </template>
